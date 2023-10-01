@@ -18,7 +18,7 @@ router.get('/productos', passport.authenticate('jwt',{ session: false }), async 
       const usuario = req.user; 
       console.log('que tiene: ',usuario)
 
-      // Asegúrate de obtener al usuario correctamente de la base de datos
+     
       const user = await Usuarios.findById(usuario);
 
       if (!user) {
@@ -26,7 +26,7 @@ router.get('/productos', passport.authenticate('jwt',{ session: false }), async 
         return res.status(404).json({ status: 'Error', error: 'Usuario no encontrado' });
       }
 
-      // Llama a getCartId en el usuario para obtener el ID del carrito
+    
       const cartId = user.getCartId();
 
       if (!cartId) {
@@ -34,7 +34,7 @@ router.get('/productos', passport.authenticate('jwt',{ session: false }), async 
         return res.status(400).json({ status: 'Error', error: 'Usuario sin carrito' });
       }
 
-      // Continúa con la obtención de productos y renderizado de la vista
+     
       const products = await productsService.getAllProducts({});
 
       res.render('products', { cartId, products, usuario });

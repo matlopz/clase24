@@ -17,7 +17,7 @@ const showProducts = async () => {
     });
     console.log('que tiene headers: ',headers, response)
     const producto = await response.json();
-  //  localStorage.setItem('authToken', producto.token)
+    localStorage.setItem('authToken', producto.token)
  
 
     producto.products.forEach(product => {
