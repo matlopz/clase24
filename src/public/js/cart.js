@@ -4,17 +4,18 @@ const showProducts = async () => {
     productList.innerHTML = '';
     const headers = {
         'Content-Type': 'application/json',
-        Authorization: localStorage.getItem('authToken')
-      }
+        authorization: localStorage.getItem('authToken')
+    }
+    
       const method = 'GET'
       const body = JSON.stringify(data)
     const response = await fetch('/productos',{
         headers,
         method,
         body,
-
+        
     });
-
+    console.log('que tiene headers: ',headers, response)
     const producto = await response.json();
   //  localStorage.setItem('authToken', producto.token)
  
@@ -92,3 +93,4 @@ const setupAddToCartButtons = () => {
         });
     });
 };
+

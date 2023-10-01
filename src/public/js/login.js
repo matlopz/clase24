@@ -12,7 +12,9 @@ loginForm.addEventListener('submit', async e => {
     formData.forEach((value, key) => (data[key] = value))
 
     const headers = {
+      
       'Content-Type': 'application/json',
+
     }
     const method = 'POST'
     const body = JSON.stringify(data)
@@ -24,8 +26,10 @@ loginForm.addEventListener('submit', async e => {
     })
 
     const newSession = await response.json()
+
     console.log('datos del back token: ',newSession)
     localStorage.setItem('authToken', newSession.token)
+    console.log(localStorage)
     if (newSession.status === 'success') {
       console.log('Inicio de sesión exitoso');
      

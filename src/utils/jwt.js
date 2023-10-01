@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-const secretKey = 'mySecret'
+const secretKey = 'secreto'
 
 const generateToken = user => {
   return jwt.sign({ user }, secretKey, { expiresIn: '30000' })
@@ -12,7 +12,7 @@ const authToken = (req, res, next) => {
   if (!authHeader)
     return res.status(401).json({ status: 'error', error: 'Unauthorized' })
 
-  const token = authHeader.split(' ')[1]
+  const token = authHeader
 
   jwt.verify(token, secretKey, (error, credentials) => {
     if (error)

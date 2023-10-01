@@ -4,7 +4,7 @@ const usuarioService = require('../services/usuarioService');
 const router = express.Router();
 const { getHashedPassword, comparePassword } = require('../utils/bcrypts');
 const Usuarios = require('../models/Users.Model');
-const cartsModels = require('../models/carts.Models');
+
 const jwt = require('passport-jwt')
 const cookieExtractor = require('../utils/cookie.extractor');
 const { generateToken } = require('../utils/jwt');
@@ -33,40 +33,54 @@ router.get('/failregister', (req, res) => {
 router.get('/login', (req, res) => {
   res.render('login')
 })
-
-router.post('/login', async (req, res) => {
+router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
   try {
-   const {email, password} = req.body
+    //const cartId = user.cart[0].product.toString();
 
-   const user = await Usuarios.findOne({email})
-   if (!user) {
-    return res.status(400).json({status: 'error', error:'credenciales Invalidas'})
-   }
-
-  
-    if (!comparePassword(password, user.password)) {
-      return res.status(400).json({status: 'error', error:'credenciales Invalidas'})
+    const user = {
+      name: req.user.name,
+      id: req.user.id
     }
-
-    req.user = {
-      name: user.name,
-      id: user.id
-
-    }
-  
     const token = generateToken(user._id)
     console.log('Token generado: ', token)
 
-    console.log('Inicio de sesión exitoso', req.user);
     res
     .cookie('authCookie', token, { maxAge: 15000, httpOnly: true })
-    .json({ status: 'success', payload: 'Inicio de Session Correcto',token });
-
+    .json({ status: 'success', payload: 'New session initialized',token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: 'error', error: 'Internal Server Error' });
   }
 });
+/*router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body
+
+    const user = await Usuarios.findOne({ email })
+    if (!user) {
+      return res.status(400).json({ status: 'error', error: 'credenciales Invalidas' })
+    }
+    if (!comparePassword(password, user.password)) {
+      return res.status(400).json({ status: 'error', error: 'credenciales Invalidas' })
+    }
+    req.user = {
+      name: user.name,
+      id: user.id
+    }
+    const token = generateToken(user._id)
+    console.log('Token generado: ', token)
+
+    console.log('Inicio de sesión exitoso', req.user);
+    res
+      .cookie('authCookie', token, { maxAge: 15000, httpOnly: true })
+      .json({ status: 'success', payload: 'Inicio de Session Correcto', token });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+  }
+});*/
+
 router.get('/failLogin', (req, res) => {
   res.json({ status: 'Error', error: 'fallo al loguearse' });
 })

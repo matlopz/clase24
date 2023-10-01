@@ -15,31 +15,36 @@ const initializedPassport = () => {
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' },
         async (req, username, password, done) => {
-            const { name, lastname, email } = req.body;
-            try {
-                const user = await Usuarios.findOne({ email: username })
-                if (user) {
-                    console.log('el usuario ya existe')
-                    return done(null, false)
-                }
-                const newUser = await Usuarios.create({
-                    name,
-                    lastname,
-                    email,
-                    password: getHashedPassword(password),
-                    cart: [],
-                })
-
-                const cart = await cartsModels.create({ products: [] });
-                //const cartId = cart._id;
-                newUser.cart.push({ product: cart._id, quantity: 0 });
-                await newUser.save();
-                done(null, newUser,newUser.cart._id)
-            } catch (error) {
-                done(`Error cuando creo el Usuario: ${error}`)
+          const { name, lastname, email, age } = req.body;
+          try {
+            const user = await Usuarios.findOne({ email: username })
+            if (user) {
+              console.log('el usuario ya existe')
+              return done(null, false)
             }
+            // Crear un carrito primero
+            const cart = await cartsModels.create({ products: [] });
+      
+            // Luego, crea el nuevo usuario y asigna el ID del carrito
+            const newUser = await Usuarios.create({
+              name,
+              lastname,
+              email,
+              age,
+              password: getHashedPassword(password),
+              cart: [{ product: cart._id, quantity: 0 }],
+            });
+      
+            // Agrega el carrito al usuario
+            newUser.cart.push({ product: cart._id, quantity: 0 });
+            await newUser.save();
+            done(null, newUser, newUser.cart[0].product);
+          } catch (error) {
+            done(`Error cuando creo el Usuario: ${error}`)
+          }
         }
-    ))
+      ))
+      
         passport.use('login', new LocalStrategy({usernameField:'email'}, 
         async(username,password,done)=>{
             try {
@@ -87,7 +92,7 @@ const initializedPassport = () => {
             }
         }))
 
-        passport.use('jwt',
+      /*  passport.use('jwt',
          new JWTStrategy({
             jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
         secretOrKey: 'mySecret',
@@ -98,7 +103,19 @@ const initializedPassport = () => {
                 done(error)
             }
         }))
-        
+        */
+        passport.use('jwt', new JWTStrategy({
+            jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+            secretOrKey: 'secreto',
+          }, async (jwt_payload, done) => {
+            try {
+              const user = await Usuarios.findById(jwt_payload.user); 
+              done(null, user);
+            } catch (error) {
+              done(error, false);
+            }
+          }));
+          
 
         passport.serializeUser((user,done)=>{
             done(null, user._id)

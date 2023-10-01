@@ -5,11 +5,24 @@ const userCollection = 'usuario'
 const userSchema = new mongoose.Schema({
   name: String,
   lastname: String,
-  email: String,
+  email: {
+    type: String,
+    unique: true, 
+    required: true, 
+  },
   age:Number,
   
   password: String,
-  cart: [
+  cart: [ 
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Cart',
+      },
+      quantity: Number,
+    },
+  ],
+  /*cart: [
     {
       product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -17,8 +30,11 @@ const userSchema = new mongoose.Schema({
       },
       quantity: Number,
     },
-  ],
-  role:{Stringdefault:'user'},
+  ],*/
+  role: {
+    type: String,
+    default: 'user', 
+  },
 })
 
 const Usuarios = mongoose.model(userCollection, userSchema)
