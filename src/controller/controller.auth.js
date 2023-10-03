@@ -7,7 +7,7 @@ const Usuarios = require('../models/Users.Model');
 
 const jwt = require('passport-jwt')
 const cookieExtractor = require('../utils/cookie.extractor');
-const { generateToken } = require('../utils/jwt');
+const { generateToken  } = require('../utils/jwt');
 
 
 router.get('/register', (req, res) => {
@@ -33,20 +33,15 @@ router.get('/failregister', (req, res) => {
 router.get('/login', (req, res) => {
   res.render('login')
 })
-router.post('/login', passport.authenticate('login', { session: false }), async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     //const cartId = user.cart[0].product.toString();
-
-    const user = {
-      name: req.user.name,
-      id: req.user.id
-    }
-    const token = generateToken(user._id)
+    const user= req.body
+    console.log('que tiene user? : ', user)
+    const token = generateToken(user.email)
     console.log('Token generado: ', token)
 
-    res
-    .cookie('authCookie', token, { maxAge: 15000, httpOnly: true })
-    .json({ status: 'success', payload: 'New session initialized',token });
+    res.json({ status: 'success', payload: 'New session initialized',token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: 'error', error: 'Internal Server Error' });

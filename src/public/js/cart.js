@@ -1,28 +1,39 @@
 const showProducts = async () => {
     const productList = document.getElementById('productList');
-
     productList.innerHTML = '';
+    
+    const authToken = localStorage.getItem('authToken');
+    console.log('que tiene authToken',authToken)
+    
+    if (!authToken) {
+        console.log('No se encontró un token de autorización en el almacenamiento local.');
+        return;
+    }
+
     const headers = {
         'Content-Type': 'application/json',
-        authorization: localStorage.getItem('authToken')
-    }
-    
-      const method = 'GET'
-      const body = JSON.stringify(data)
-    const response = await fetch('/productos',{
-        headers,
-        method,
-        body,
-        
-    });
-    console.log('que tiene headers: ',headers, response)
-    const producto = await response.json();
-    localStorage.setItem('authToken', producto.token)
- 
+        'Authorization': `Bearer ${authToken}`
+    };
 
-    producto.products.forEach(product => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
+    const method = 'GET';
+
+    try {
+        const response = await fetch('/views/productos', {
+            headers,
+            method,
+        });
+
+        if (!response.ok) {
+            console.log('Error en la solicitud:', response.status);
+            return;
+        }
+
+        const producto = await response.json();
+        localStorage.setItem('authToken', producto.token);
+
+        producto.products.forEach(product => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
                 <br>----------------------------------------</br>
                 <strong>ID:</strong> ${product._id}<br>
                 <strong>Title:</strong> ${product.title}<br>
@@ -38,18 +49,19 @@ const showProducts = async () => {
                     <button type="submit" data-product="${product._id}">Agregar al Carrito</button><br>
                 </form>
             `;
-        productList.appendChild(listItem);
-        
-    });
-    setupAddToCartButtons();
+            productList.appendChild(listItem);
+        });
 
+        setupAddToCartButtons();
+    } catch (error) {
+        console.error('Error al realizar la solicitud:', error);
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-
     showProducts();
-    
 });
+
 
 
 const setupAddToCartButtons = () => {

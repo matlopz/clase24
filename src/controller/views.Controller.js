@@ -9,25 +9,35 @@ const passport = require('passport');
 const Usuarios = require('../models/Users.Model');
 //const { authToken } = require('../utils/jwt');
 const passportCall = require('../utils/passport.call');
+const { authToken } = require('../utils/jwt');
+const User = require('../models/user');
 const router = express.Router();
 
-router.get('/productos', passport.authenticate('jwt',{ session: false }), async (req, res) => {
+router.get('/productos', authToken, async (req, res) => {
   try {
-    console.log('tiene: ',req.headers)
-    if (req.user) {
-      const usuario = req.user; 
-      console.log('que tiene: ',usuario)
+    
+    const cookie = req.headers.authorization
+    console.log('tiene user: ',cookie)
+    const email = req.user
+    if (email) {
+      
+  
 
      
-      const user = await Usuarios.findById(usuario);
-
+      const user = await Usuarios.findOne({email});
+      console.log('tiene user: ',user)
       if (!user) {
         console.error('Usuario no encontrado');
         return res.status(404).json({ status: 'Error', error: 'Usuario no encontrado' });
       }
+      const usuario = {
+        name: user.name,
+        id: user.id
 
-    
-      const cartId = user.getCartId();
+      };
+      const cartId = user.cart[0].product.toString({});
+      console.log('que tiene cartId: ', cartId)
+      //const cartId = user.cart.find(id);
 
       if (!cartId) {
         console.error('El usuario no tiene un carrito válido');
@@ -37,7 +47,7 @@ router.get('/productos', passport.authenticate('jwt',{ session: false }), async 
      
       const products = await productsService.getAllProducts({});
 
-      res.render('products', { cartId, products, usuario });
+      res.render('products',  cartId, products, usuario );
     } else {
       res.status(401).json({ status: 'Error', error: 'No autorizado' });
     }

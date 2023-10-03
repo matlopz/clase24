@@ -109,7 +109,7 @@ const initializedPassport = () => {
             secretOrKey: 'secreto',
           }, async (jwt_payload, done) => {
             try {
-              const user = await Usuarios.findById(jwt_payload.user); 
+              const user = await Usuarios.findById(jwt_payload.user._id); 
               done(null, user);
             } catch (error) {
               done(error, false);
