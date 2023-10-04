@@ -30,11 +30,11 @@ loginForm.addEventListener('submit', async e => {
     console.log('datos del back token: ',newSession)
     const token = newSession.token
     localStorage.setItem('authToken',token)
-    console.log('que tiene local Storage: ',localStorage)
+    console.log('que tiene local Storage: ',token)
     if (newSession.status === 'success') {
       console.log('Inicio de sesión exitoso');
      
-     //window.location.href = '/views/productos';
+     window.location.href = '/views/productos';
     } else {
       console.log('Error en el inicio de sesión');
     }

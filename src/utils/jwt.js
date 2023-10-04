@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken')
 const secretKey = 'secreto'
 
 const generateToken = user => {
+  console.log('que tiene user jwt:', {user})
   return jwt.sign({ user }, secretKey)
+  
 }
 
 const authToken = (req, res, next) => {

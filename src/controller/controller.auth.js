@@ -2,12 +2,12 @@ const express = require('express');
 const passport = require('passport')
 const usuarioService = require('../services/usuarioService');
 const router = express.Router();
-const { getHashedPassword, comparePassword } = require('../utils/bcrypts');
+const { comparePassword } = require('../utils/bcrypts');
 const Usuarios = require('../models/Users.Model');
 
 const jwt = require('passport-jwt')
 const cookieExtractor = require('../utils/cookie.extractor');
-const { generateToken  } = require('../utils/jwt');
+const { generateToken } = require('../utils/jwt');
 
 
 router.get('/register', (req, res) => {
@@ -36,12 +36,22 @@ router.get('/login', (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     //const cartId = user.cart[0].product.toString();
-    const user= req.body
+    const { email, password } = req.body
+    console.log(req.body)
+    const user = await Usuarios.findOne({email})
+
+    if (!user && !comparePassword(password, user.password)) {
+       res.status(400).json({ status: 'error', error: 'Credenciales Invalidas' });
+    }
+
+    
     console.log('que tiene user? : ', user)
-    const token = generateToken(user.email)
+    const token = generateToken(user._id)
     console.log('Token generado: ', token)
 
-    res.json({ status: 'success', payload: 'New session initialized',token });
+    res
+      .cookie('authCookie')
+      .json({ status: 'success', payload: 'New session initialized', token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: 'error', error: 'Internal Server Error' });

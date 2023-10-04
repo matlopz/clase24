@@ -7,7 +7,7 @@ const UsuarioService= {
         return UsuarioDAO.createUser()
 },
 async usuariobyEmail(){
-    return UsuarioDAO.getUserByEmail()
+    return UsuarioDAO.getUserByEmail({})
 },
 }
 module.exports = UsuarioService

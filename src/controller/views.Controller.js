@@ -13,19 +13,25 @@ const { authToken } = require('../utils/jwt');
 const User = require('../models/user');
 const router = express.Router();
 
-router.get('/productos', authToken, async (req, res) => {
+
+router.get('/productos', async (req, res)=>{
+  return res.render('products')
+})
+
+
+/router.get('/product', authToken, async (req, res) => {
   try {
     
     const cookie = req.headers.authorization
-    console.log('tiene user: ',cookie)
+        console.log('tiene cookie: ',cookie)
     const email = req.user
     if (email) {
       
   
 
      
-      const user = await Usuarios.findOne({email});
-      console.log('tiene user: ',user)
+      const user = await Usuarios.findById(email);
+      console.log('tiene id de user: ',user)
       if (!user) {
         console.error('Usuario no encontrado');
         return res.status(404).json({ status: 'Error', error: 'Usuario no encontrado' });
@@ -35,7 +41,8 @@ router.get('/productos', authToken, async (req, res) => {
         id: user.id
 
       };
-      const cartId = user.cart[0].product.toString({});
+      console.log('que tiene usuerio',usuario)
+      const cartId = user.cart[0].product.toString();
       console.log('que tiene cartId: ', cartId)
       //const cartId = user.cart.find(id);
 
@@ -47,7 +54,7 @@ router.get('/productos', authToken, async (req, res) => {
      
       const products = await productsService.getAllProducts({});
 
-      res.render('products',  cartId, products, usuario );
+      res.json(  {cartId, products, usuario });
     } else {
       res.status(401).json({ status: 'Error', error: 'No autorizado' });
     }
@@ -94,7 +101,7 @@ router.get('/carritos/:cid', async (req, res) => {
 });
 
 router.get('/logout', async(req,res)=>{
-  res.clearCookie('connect.sid')
+  res.destroy('connect.sid')
   console.log('desologuear al cliente: ',res.clearCookie('cookieDelProyecto'))
   res.redirect('/auth/login');
 

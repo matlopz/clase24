@@ -12,24 +12,26 @@ const showProducts = async () => {
 
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
+        'Authorization':`Bearer ${localStorage.getItem('authToken')}`,
     };
-
+    console.log('que tiene ',headers)
     const method = 'GET';
 
     try {
-        const response = await fetch('/views/productos', {
+        const response = await fetch('/views/product', {
             headers,
             method,
+            
         });
 
         if (!response.ok) {
-            console.log('Error en la solicitud:', response.status);
+            console.log('Error en la solicitud: ', response.status);
             return;
         }
 
         const producto = await response.json();
-        localStorage.setItem('authToken', producto.token);
+        console.log('que tiene el json:',producto)
+      
 
         producto.products.forEach(product => {
             const listItem = document.createElement('li');

@@ -10,9 +10,9 @@ const UsuarioDAO = {
         throw new Error('Error al crear un usuario');
       }
     },
-    async getUserByEmail(email) {
+    async getUserByEmail({email}) {
         try {
-          return await Users.findOne({ email });
+          return await Usuario.findOne({ email });
         } catch (error) {
           throw new Error('Error al buscar el usuario por correo electrónico');
         }
