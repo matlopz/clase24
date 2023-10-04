@@ -9,7 +9,10 @@
 <a href="/views/logout"><button type="submit" class="btn btn-success">Cerrar Session</button></a>
 <p id="cartIdValue" style="display: none;">{{cartId}}</p>
    <h3>¡Bienvenido, {{usuario.name}}!</h3>
-
+<div id="userInfo">
+    <p>User: <span id="userName"></span></p>
+    <p>Cart ID: <span id="cartId"></span></p>
+</div>
   <h1>Productos </h1>
 
   <ul id="productList">
@@ -18,6 +21,10 @@
   <form action="/carts" method="GET">
 
   </form>
+  <script id="userInfoTemplate" type="text/x-handlebars-template">
+    <p>User: {{userName}}</p>
+    <p>Cart ID: {{cartId}}</p>
+</script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/cart.js"></script>
 </body>

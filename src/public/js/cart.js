@@ -1,27 +1,31 @@
-const showProducts = async () => {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = '';
-    
+const fetchData = async () => {
     const authToken = localStorage.getItem('authToken');
-    console.log('que tiene authToken',authToken)
+    console.log('que tiene authToken', authToken);
     
     if (!authToken) {
         console.log('No se encontró un token de autorización en el almacenamiento local.');
         return;
     }
+        showProducts();
+        setupAddToCartButtons();
+   
+};
 
+
+const showProducts = async () => {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization':`Bearer ${localStorage.getItem('authToken')}`,
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
     };
-    console.log('que tiene ',headers)
+    console.log('que tiene ', headers);
     const method = 'GET';
 
     try {
         const response = await fetch('/views/product', {
             headers,
             method,
-            
         });
 
         if (!response.ok) {
@@ -30,9 +34,6 @@ const showProducts = async () => {
         }
 
         const producto = await response.json();
-        console.log('que tiene el json:',producto)
-      
-
         producto.products.forEach(product => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `
@@ -66,10 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-const setupAddToCartButtons = () => {
-    var cartIdValue = document.getElementById('cartIdValue').textContent;
-    cartIdValue = cartIdValue.trim();
-    console.log('Valor del nuevo cart ID:', cartIdValue);
+const setupAddToCartButtons = async() => {
+ 
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+    };
+    console.log('que tiene ', headers);
+    const method = 'GET';
+
+    try {
+        const response = await fetch('/views/product', {
+            headers,
+            method,
+        });
+
+        if (!response.ok) {
+            console.log('Error en la solicitud: ', response.status);
+            return;
+        }
+
+        const producto = await response.json();
+
+        const {cartId} = producto
+                //const cartId = cartIdValue
+                console.log('carrito id:',cartId)
+    console.log('Valor del nuevo cart ID:', cartId);
    
     const addToCartForms = document.querySelectorAll('.addToCartForm');
     addToCartForms.forEach(addToCartForm => {
@@ -78,8 +101,7 @@ const setupAddToCartButtons = () => {
             const productId = event.target.querySelector('button').getAttribute('data-product');
             if (productId) {
                 try {
-                    const cartId = cartIdValue
-                    console.log(cartId)
+   
                     console.log(productId)
                     const url = `/carts/${cartId}/product/${productId}`;
 
@@ -106,5 +128,8 @@ const setupAddToCartButtons = () => {
             }
         });
     });
+} catch (error) {
+    console.error('Error al realizar la solicitud:', error);
+}
 };
 
